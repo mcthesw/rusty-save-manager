@@ -1,3 +1,17 @@
+<script lang="ts" setup>
+import MainSideBar from "./components/MainSideBar.vue";
+import { ElNotification } from "element-plus";
+
+ElNotification({
+	title: "提示",
+	message: "这是一个早期测试版本，不能保证稳定性，请谨慎使用",
+	type: "warning",
+	duration: 3000,
+});
+
+
+</script>
+
 <template>
 	<el-container>
 		<el-aside width="200px">
@@ -12,10 +26,6 @@
 		</el-main>
 	</el-container>
 </template>
-
-<script lang="ts" setup>
-
-</script>
 
 <style>
 #app {

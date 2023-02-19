@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "RGSM",
-    "version": "0.0.0"
+    "version": "0.4.0"
   },
   "tauri": {
     "allowlist": {
@@ -33,7 +33,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.sworld.gsm",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -60,10 +60,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 720,
         "resizable": true,
-        "title": "RGSM",
-        "width": 800
+        "title": "RustyManager",
+        "width": 1280
       }
     ]
   }
