@@ -32,6 +32,7 @@ pub struct Config {
     settings: Settings,
 }
 
+/// Get the default config struct
 fn default_config() -> Config {
     Config {
         version: String::from("0.4.0"),
@@ -44,6 +45,7 @@ fn default_config() -> Config {
     }
 }
 
+/// Create a config file
 fn init_config() -> Result<()> {
     println!("初始化配置文件");
     let json = serde_json::to_string_pretty(&default_config())?;
@@ -52,17 +54,22 @@ fn init_config() -> Result<()> {
     Ok(())
 }
 
+/// Get the current config file
 pub fn get_config() -> Result<Config> {
     let file = File::open("./GameSaveManager.config.json")?;
     Ok(serde_json::from_reader(file)?)
 }
 
+/// Replace the config file with a new config struct
 pub fn set_config(config: Config) -> Result<()> {
     let mut file = File::create("./GameSaveManager.config.json")?;
     file.write_all(serde_json::to_string_pretty(&config)?.as_bytes())?;
     Ok(())
 }
 
+/// Check the config file exists or not
+/// if not, then create one
+/// then send the config to the front end
 #[tauri::command]
 async fn config_check()->Result<String>{
     if !fs::metadata("./GameSaveManager.config.json")?.is_file() {
