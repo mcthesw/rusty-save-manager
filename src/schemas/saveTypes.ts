@@ -1,8 +1,12 @@
+export interface SaveUnit{
+    type:"file"|"folder";
+    path:string;
+}
 export interface Game {
     /**
      * 游戏存档路径
      */
-    save_path: string;
+    save_paths: Array<SaveUnit>;
     /**
      * 游戏启动路径
      */
@@ -33,7 +37,7 @@ export interface Config {
     settings:Settings;
 }
 
-export interface Save {
+export interface Backup {
     /**
      * 存档的日期时间(和Saves中的游戏名可确定唯一存档)
      */
@@ -47,7 +51,7 @@ export interface Save {
      */
     path: string;
 }
-export interface Saves {
+export interface Backups {
     /**
      * 游戏名(判断存档组的唯一标识)
      */
@@ -55,7 +59,7 @@ export interface Saves {
     /**
      * 存档信息
      */
-    saves: Array<Save>;
+    backups: Array<Backup>;
     /**
      * 游戏图标,可以是base64也可以是url
      */

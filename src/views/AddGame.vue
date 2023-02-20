@@ -12,11 +12,6 @@ import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-
-const game_name = ref("") // 写入游戏名
-const save_path = ref("") // 选择游戏存档目录
-const game_path = ref("") // 选择游戏启动程序
-const game_icon_src = ref("https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png")
 const buttons = [
     {
         text: "修改已保存的配置",
@@ -45,6 +40,11 @@ const buttons = [
 ] as const;
 
 
+const game_name = ref("") // 写入游戏名
+let save_path = reactive([]) // 选择游戏存档目录
+const game_path = ref("") // 选择游戏启动程序
+const game_icon_src = ref("https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png")
+
 function choose_save_directory() {
     // TODO:选择游戏存档目录
 }
@@ -70,10 +70,10 @@ function change() {
     router.push("/change-game-info");
 }
 function save() {
-    if (game_name.value == "" || save_path.value == "") {
+    if (game_name.value == "" || save_path.length == 0) {
         ElNotification({
             type: "error",
-            message: "请至少输入游戏名和存档路径"
+            message: "请至少输入游戏名和一个存档路径"
         })
         return
     }
@@ -89,7 +89,7 @@ function save() {
 function reset() {
     // 重置当前配置
     game_name.value = "";
-    save_path.value = "";
+    save_path = reactive([]);
     game_path.value = "";
     game_icon_src.value =
         "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png";
@@ -100,84 +100,103 @@ function reset() {
         duration: 1000,
     });
 }
+
+function deleteRow(index: number) {
+    save_path.splice(index, 1);
+}
+function addPath() {
+    // save_path.push({
+    //     path: "",
+    //     type: "",
+    // });
+}
 </script>
 
 <template>
     <div class="select-container">
-        <el-main>
-            <el-card class="game-info">
-                <div class="top-part">
-                    <img class="game-icon" :src="game_icon_src" />
-                </div>
-                <div style="padding: 14px" class="input-container">
-                    <div class="bottom">
-                        <el-button @click="choose_game_icon()" type="default" class="button" disabled>
-                            选择游戏图标(请使用方形图片)
+        <el-card class="game-info">
+            <div class="top-part">
+                <img class="game-icon" :src="game_icon_src" />
+                <el-input v-model="game_name" placeholder="请输入游戏名（必须）" class="game-name">
+                    <template #prepend>
+                        游戏名称
+                    </template>
+                </el-input>
+                <el-input v-model="game_path" placeholder="请选择游戏启动文件（非必须）" class="game-path">
+                    <template #prepend>
+                        启动文件
+                    </template>
+                    <template #append>
+                        <el-button @click="choose_executable_file()">
+                            <el-icon>
+                                <document-add />
+                            </el-icon>
                         </el-button>
-                        <el-input v-model="game_name" placeholder="请输入游戏名（必须）">
-                            <template #prepend>
-                                游戏名称
-                            </template>
-                        </el-input>
-                        <el-input v-model="save_path" placeholder="请选择存档路径（必须）">
-                            <template #prepend>
-                                存档目录
-                            </template>
-                            <template #append>
-                                <el-button @click="choose_save_directory()">
-                                    <el-icon>
-                                        <document-add />
-                                    </el-icon>
-                                </el-button>
-                            </template>
-                        </el-input>
-                        <el-input v-model="game_path" placeholder="请选择游戏启动文件（非必须）">
-                            <template #prepend>
-                                启动文件
-                            </template>
-                            <template #append>
-                                <el-button @click="choose_executable_file()">
-                                    <el-icon>
-                                        <document-add />
-                                    </el-icon>
-                                </el-button>
-                            </template>
-                        </el-input>
-                    </div>
-                </div>
-            </el-card>
-        </el-main>
-        <el-footer>
-            <el-container class="submit-bar">
-                <el-tooltip v-for="button in buttons" :key="button.text" :content="button.text" placement="top">
-                    <el-button @click="submit_handler(button.method)" :type="button.type" circle>
-                        <el-icon>
-                            <component :is="button.icon" />
-                        </el-icon>
-                    </el-button>
-                </el-tooltip>
-            </el-container>
-        </el-footer>
+                    </template>
+                </el-input>
+            </div>
+            <el-table :data="save_path" class="save-table">
+                <el-table-column fixed prop="type" label="类型" width="120" />
+                <el-table-column label="控制" width="120">
+                    <template #default="scope">
+                        <el-button link type="primary" size="small" @click.prevent="deleteRow(scope.$index)">
+                            移除
+                        </el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="path" label="路径" />
+            </el-table>
+            <el-button type="primary" @click="addPath">添加存档文件/文件夹</el-button>
+        </el-card>
+        <el-container class="submit-bar">
+            <el-tooltip v-for="button in buttons" :key="button.text" :content="button.text" placement="top">
+                <el-button @click="submit_handler(button.method)" :type="button.type" circle>
+                    <el-icon>
+                        <component :is="button.icon" />
+                    </el-icon>
+                </el-button>
+            </el-tooltip>
+        </el-container>
     </div>
 </template>
 
 <style scoped>
-.select-container {
-    height: 100%;
-    width: 100%;
+.save-table {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-.el-main {
+.select-container {
     height: 90%;
-    overflow: hidden;
+    width: 100%;
 }
 
 .game-info {
     height: 99%;
+    margin-bottom: 20px;
 }
 
 .top-part {
     height: 200px;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.top-part>img {
+    grid-column: 1/2;
+    grid-row: 1/7;
+}
+
+.game-name {
+    grid-column: 2/3;
+    grid-row: 5/6;
+    margin-bottom: 5px;
+}
+
+.game-path {
+    grid-column: 2/3;
+    grid-row: 6/7;
 }
 
 .game-icon {
@@ -186,11 +205,8 @@ function reset() {
     width: 200px;
 }
 
-.el-input {
-    margin-top: 10px;
-}
-
 .submit-bar {
     justify-content: flex-end;
+    height: 10%;
 }
 </style>
