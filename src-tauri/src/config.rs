@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, path};
 use std::{fs::File, io::Write};
 
 use anyhow::Result;
@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 /// A save unit should be a file or a folder
 #[derive(Debug, Serialize, Deserialize)]
-enum SaveUnitType {
+pub enum SaveUnitType {
     File,
     Folder,
 }
@@ -14,14 +14,14 @@ enum SaveUnitType {
 /// A save unit declares one of the files/folders
 /// that should be backup for a game
 #[derive(Debug, Serialize, Deserialize)]
-struct SaveUnit {
+pub struct SaveUnit {
     unit_type: SaveUnitType,
     path: String,
 }
 
 /// A game struct contains the save units and the game's launcher
 #[derive(Debug, Serialize, Deserialize)]
-struct Game {
+pub struct Game {
     save_paths: Vec<SaveUnit>,
     game_path: Option<String>,
 }
@@ -38,10 +38,10 @@ struct Settings {
 /// and the settings
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    version: String,
-    backup_path: String,
-    games: Vec<Game>,
-    settings: Settings,
+    pub version: String,
+    pub backup_path: String,
+    pub games: Vec<Game>,
+    pub settings: Settings,
 }
 
 /// Get the default config struct
@@ -84,7 +84,8 @@ pub fn set_config(config: Config) -> Result<()> {
 /// then send the config to the front end
 #[tauri::command]
 async fn config_check() -> Result<String> {
-    if !fs::metadata("./GameSaveManager.config.json")?.is_file() {
+    let config_path = path::Path::new("./GameSaveManager.config.json");
+    if !config_path.is_file() || !config_path.exists() {
         init_config()?;
     }
     let config = get_config()?;
@@ -92,7 +93,7 @@ async fn config_check() -> Result<String> {
         //TODO:需要完成旧版本到新版本的迁移
         todo!();
     }
-    Ok(serde_json::to_string(&config)?)
+    Ok(serde_json::to_string(&config)?) // return the config json
 }
 
 #[cfg(test)]
