@@ -71,12 +71,12 @@ pub fn set_config(config: Config) -> Result<()> {
 /// if not, then create one
 /// then send the config to the front end
 #[tauri::command]
-async fn config_check()->Result<String>{
+async fn config_check() -> Result<String> {
     if !fs::metadata("./GameSaveManager.config.json")?.is_file() {
         init_config()?;
     }
     let config = get_config()?;
-    if config.version != default_config().version{
+    if config.version != default_config().version {
         //TODO:需要完成旧版本到新版本的迁移
         todo!();
     }
@@ -85,7 +85,7 @@ async fn config_check()->Result<String>{
 
 #[cfg(test)]
 mod test {
-    use super::default_config;
+    use super::{default_config, Game, SaveUnit, SaveUnitType};
     use anyhow::Result;
 
     #[test]
@@ -93,6 +93,28 @@ mod test {
         let config = default_config();
         let json = serde_json::to_string(&config)?;
         println!("序列化得到:\n{}", json);
+        Ok(())
+    }
+    #[test]
+    fn serialize_games() -> Result<()> {
+        let mut units = Vec::new();
+        units.push(SaveUnit {
+            unit_type: SaveUnitType::File,
+            path: String::from("C://aaa.txt"),
+        });
+        units.push(SaveUnit {
+            unit_type: SaveUnitType::Folder,
+            path: String::from("C://aaa"),
+        });
+        let mut games = Vec::new();
+        games.push(Game {
+            game_path: None,
+            save_paths: units,
+        });
+        let json = serde_json::to_string(&games)?;
+        assert_eq!(json,String::from(
+            "[{\"save_paths\":[{\"unit_type\":\"File\",\"path\":\"C://aaa.txt\"},{\"unit_type\":\"Folder\",\"path\":\"C://aaa\"}],\"game_path\":null}]"
+        ));
         Ok(())
     }
 }
