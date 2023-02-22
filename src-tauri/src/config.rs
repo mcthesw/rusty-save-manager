@@ -4,26 +4,38 @@ use std::{fs::File, io::Write};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
+/// A save unit should be a file or a folder
 #[derive(Debug, Serialize, Deserialize)]
 enum SaveUnitType {
     File,
     Folder,
 }
+
+/// A save unit declares one of the files/folders
+/// that should be backup for a game
 #[derive(Debug, Serialize, Deserialize)]
 struct SaveUnit {
     unit_type: SaveUnitType,
     path: String,
 }
+
+/// A game struct contains the save units and the game's launcher
 #[derive(Debug, Serialize, Deserialize)]
 struct Game {
     save_paths: Vec<SaveUnit>,
     game_path: Option<String>,
 }
+
+/// Settings that can be configured by user
 #[derive(Debug, Serialize, Deserialize)]
 struct Settings {
     prompt_when_not_described: bool,
     extra_backup_when_apply: bool,
 }
+
+/// The software's configuration
+/// include the version, backup's location path, games'info,
+/// and the settings
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     version: String,
