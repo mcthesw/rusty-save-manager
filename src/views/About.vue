@@ -31,7 +31,7 @@ const frames = [
                 你可以点击下方的“开源地址”，在上面为我点一个Star，这是对我很大的鼓励，也可以通过开源平台为这个项目贡献代码和提出问题。
             </p>
             <p>
-                如果你是普通用户，可以考虑请我喝杯饮料，我将会把你的昵称放在捐赠名单上以表示感谢。
+                如果你是普通用户，可以考虑请我喝杯饮料，我会非常感激。
             </p>
             <el-container direction="horizontal" class="thanks-container">
                 <div class="thanks">

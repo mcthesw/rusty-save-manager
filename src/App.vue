@@ -28,8 +28,12 @@ ElNotification({
 </template>
 
 <style>
+@font-face{
+    font-family: 'OppoSans';
+    src: url('./assets/fonts/OPPOSans-M.ttf') format('truetype');
+}
 #app {
-	font-family: Avenir, Helvetica, Arial, sans-serif;
+	font-family:'OppoSans', Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }

@@ -1,8 +1,9 @@
 export interface SaveUnit{
-    type:"file"|"folder";
+    unit_type:"file"|"folder";
     path:string;
 }
 export interface Game {
+    name:string,
     /**
      * 游戏存档路径
      */
@@ -11,12 +12,6 @@ export interface Game {
      * 游戏启动路径
      */
     game_path?: string;
-}
-export interface Games {
-    /**
-     * 使用游戏名来找到游戏信息
-     */
-    [name: string]: Game;
 }
 export interface Config {
     /**
@@ -30,7 +25,7 @@ export interface Config {
     /**
      * 各个游戏信息
      */
-    games: Games;
+    games: Array<Game>;
     /**
      * 存档管理器的配置信息
      */
@@ -80,7 +75,7 @@ export interface Settings {
 export let default_config: Config = {
     version: "0.4.0",
     backup_path: "./save_data",
-    games: {},
+    games: [],
     settings:{
         prompt_when_not_described:false,
         extra_backup_when_apply:true,
