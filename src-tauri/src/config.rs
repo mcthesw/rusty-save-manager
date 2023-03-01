@@ -1,5 +1,5 @@
+use std::fs::File;
 use std::{fs, path};
-use std::{fs::File, io::Write};
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -15,20 +15,21 @@ pub enum SaveUnitType {
 /// that should be backup for a game
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SaveUnit {
-    unit_type: SaveUnitType,
-    path: String,
+    pub unit_type: SaveUnitType,
+    pub path: String,
 }
 
 /// A game struct contains the save units and the game's launcher
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Game {
-    save_paths: Vec<SaveUnit>,
-    game_path: Option<String>,
+    pub name:String,
+    pub save_paths: Vec<SaveUnit>,
+    pub game_path: Option<String>,
 }
 
 /// Settings that can be configured by user
 #[derive(Debug, Serialize, Deserialize)]
-struct Settings {
+pub struct Settings {
     prompt_when_not_described: bool,
     extra_backup_when_apply: bool,
 }
@@ -60,9 +61,10 @@ fn default_config() -> Config {
 /// Create a config file
 fn init_config() -> Result<()> {
     println!("初始化配置文件");
-    let json = serde_json::to_string_pretty(&default_config())?;
-    let mut file = File::create("./GameSaveManager.config.json")?;
-    file.write_all(json.as_bytes())?;
+    fs::write(
+        "./GameSaveManager.config.json",
+        serde_json::to_string_pretty(&default_config())?,
+    )?;
     Ok(())
 }
 
@@ -74,8 +76,10 @@ pub fn get_config() -> Result<Config> {
 
 /// Replace the config file with a new config struct
 pub fn set_config(config: Config) -> Result<()> {
-    let mut file = File::create("./GameSaveManager.config.json")?;
-    file.write_all(serde_json::to_string_pretty(&config)?.as_bytes())?;
+    fs::write(
+        "./GameSaveManager.config.json",
+        serde_json::to_string_pretty(&config)?,
+    )?;
     Ok(())
 }
 
@@ -104,7 +108,7 @@ mod test {
     #[test]
     fn serialize_default_config() -> Result<()> {
         let config = default_config();
-        let json = serde_json::to_string(&config)?;
+        let json = serde_json::to_string_pretty(&config)?;
         println!("序列化得到:\n{}", json);
         Ok(())
     }
@@ -121,12 +125,13 @@ mod test {
         });
         let mut games = Vec::new();
         games.push(Game {
+            name: String::from("111"),
             game_path: None,
             save_paths: units,
         });
         let json = serde_json::to_string(&games)?;
         assert_eq!(json,String::from(
-            "[{\"save_paths\":[{\"unit_type\":\"File\",\"path\":\"C://aaa.txt\"},{\"unit_type\":\"Folder\",\"path\":\"C://aaa\"}],\"game_path\":null}]"
+            "[{\"name\":\"111\",\"save_paths\":[{\"unit_type\":\"File\",\"path\":\"C://aaa.txt\"},{\"unit_type\":\"Folder\",\"path\":\"C://aaa\"}],\"game_path\":null}]"
         ));
         Ok(())
     }

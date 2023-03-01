@@ -5,6 +5,7 @@
 
 mod config;
 mod backup;
+mod archive;
 
 fn main() {
     tauri::Builder::default()
